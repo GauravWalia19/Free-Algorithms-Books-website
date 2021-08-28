@@ -24,7 +24,7 @@
     "@octokit/rest": "^18.9.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "mongoose": "^5.13.7"
+    "mongoose": "^6.0.2"
   },
   "devDependencies": {
     "concurrently": "^6.2.1",
