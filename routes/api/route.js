@@ -7,10 +7,9 @@ const {validateAndGetBookData,
     createIssue
 } = require('../../util/util');
 
-mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true
+mongoose.connect(process.env.MONGODB_URI,(err)=>{
+    if(err) console.log(err);
+    console.log("Connected to Mongo")
 });
 
 const db = mongoose.connection;
