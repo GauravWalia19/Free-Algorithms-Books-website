@@ -1,36 +1,36 @@
 {
-  "name": "freealgorithmbookswebsite",
-  "version": "1.0.0",
-  "engines": {
-    "node": "14.x",
-    "yarn": "1.x"
-  },
-  "description": "Free Algorithm Books Website project",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js",
-    "dev:server": "nodemon server.js",
-    "dev:client": "cd client && yarn start",
-    "dev:mern": "concurrently -n 'server,client' -c 'yellow,blue' \"yarn run dev:server\" \"yarn run dev:client\"",
-    "test:server": "mocha --exit --timeout 15000",
-    "test:client": "cd client && yarn run test:nowatch",
-    "test": "concurrently -n 'server,client' -c 'yellow,blue' \"yarn run test:server\" \"yarn run test:client\"",
-    "heroku-postbuild": "cd client && yarn install && yarn run build",
-    "ci": "yarn install --frozen-lockfile && cd client && yarn install --frozen-lockfile"
-  },
-  "author": "Gaurav Walia",
-  "license": "MIT",
-  "dependencies": {
-    "@octokit/rest": "^18.12.0",
-    "cors": "^2.8.5",
-    "express": "^4.17.1",
-    "mongoose": "^6.0.10"
-  },
-  "devDependencies": {
-    "concurrently": "^6.3.0",
-    "dotenv": "^10.0.0",
-    "mocha": "^9.1.2",
-    "nodemon": "^2.0.13",
-    "supertest": "^6.1.6"
-  }
+    "name": "freealgorithmbookswebsite",
+    "version": "1.0.0",
+    "engines": {
+        "node": "20.x",
+        "yarn": "1.x"
+    },
+    "description": "Free Algorithm Books Website project",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js",
+        "dev:server": "nodemon server.js",
+        "dev:client": "cd client && yarn start",
+        "dev:mern": "concurrently -n 'server,client' -c 'yellow,blue' \"yarn run dev:server\" \"yarn run dev:client\"",
+        "test:server": "mocha --exit --timeout 15000",
+        "test:client": "cd client && yarn run test:nowatch",
+        "test": "concurrently -n 'server,client' -c 'yellow,blue' \"yarn run test:server\" \"yarn run test:client\"",
+        "heroku-postbuild": "cd client && yarn install && yarn run build",
+        "ci": "yarn install --frozen-lockfile && cd client && yarn install --frozen-lockfile"
+    },
+    "author": "Gaurav Walia",
+    "license": "MIT",
+    "dependencies": {
+        "@octokit/rest": "^20.0.2",
+        "cors": "^2.8.5",
+        "express": "^4.18.2",
+        "mongoose": "^8.1.3"
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.2",
+        "dotenv": "^16.4.4",
+        "mocha": "^10.3.0",
+        "nodemon": "^3.0.3",
+        "supertest": "^6.3.4"
+    }
 }
