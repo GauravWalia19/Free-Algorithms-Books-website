@@ -1,48 +1,47 @@
-import React,{useEffect,useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../common/Header';
 import Footer from '../common/Footer';
 import '../styles/BooksPage.css';
 import BooksList from '../others/BooksList';
+import { useParams } from 'react-router-dom';
 
-const BooksPage = (props) => {
+const BooksPage = () => {
     const [books, setBooks] = useState([]);
-    const [search, setSearch] = useState("");
+    const [search, setSearch] = useState('');
+    const { language } = useParams();
 
     const handleSearchChange = (e) => {
         setSearch(e.target.value);
-        fetch(`/api/v1/search?language=${props.match.params.language}&name=${e.target.value}`)
-        .then(res => res.json())
-        .then((data)=>{
-            if(Array.isArray(data)){
-                setBooks(data);
-            }
-        })
-        .catch(err => console.log(err))
-    }
+        fetch(`/api/v1/search?language=${language}&name=${e.target.value}`)
+            .then((res) => res.json())
+            .then((data) => {
+                if (Array.isArray(data)) {
+                    setBooks(data);
+                }
+            })
+            .catch((err) => console.log(err));
+    };
 
     useEffect(() => {
-        fetch(`/api/v1/get?language=${props.match.params.language}`)
-        .then(res => res.json())
-        .then((data)=>{
-            if(Array.isArray(data)){
-                setBooks(data);
-            }
-        })
-        .catch(err => console.log(err))
-    }, [props.match.params.language])
+        fetch(`/api/v1/get?language=${language}`)
+            .then((res) => res.json())
+            .then((data) => {
+                if (Array.isArray(data)) {
+                    setBooks(data);
+                }
+            })
+            .catch((err) => console.log(err));
+    }, [language]);
 
     return (
         <React.Fragment>
-            <Header/>
+            <Header />
             <div className="booksPageDiv">
                 <div className="searchHeader">
                     <div id="booksSearchDiv">
                         <span>
-                            <i className="fas fa-search"></i>
-                            {' '}
-                            Search Books
-                        </span>
-                        {' '}
+                            <i className="fas fa-search"></i> Search Books
+                        </span>{' '}
                         <input
                             type="search"
                             autoComplete="off"
@@ -52,17 +51,17 @@ const BooksPage = (props) => {
                             onChange={handleSearchChange}
                         />
                     </div>
-                    <h1>{props.match.params.language}</h1>
+                    <h1>{language}</h1>
                 </div>
                 <hr />
-                <BooksList books={books}/>
+                <BooksList books={books} />
                 <div className="footerLine">
                     We don't own any of these books.
                 </div>
             </div>
             <Footer />
         </React.Fragment>
-    )
-}
+    );
+};
 
-export default BooksPage
+export default BooksPage;
