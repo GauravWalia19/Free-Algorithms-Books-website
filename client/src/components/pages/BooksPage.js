@@ -12,7 +12,7 @@ const BooksPage = () => {
 
     const handleSearchChange = (e) => {
         setSearch(e.target.value);
-        fetch(`/api/v1/search?language=${language}&name=${e.target.value}`)
+        fetch(`/api/v1/book/search?language=${language}&name=${e.target.value}`)
             .then((res) => res.json())
             .then((data) => {
                 if (Array.isArray(data)) {
@@ -23,7 +23,7 @@ const BooksPage = () => {
     };
 
     useEffect(() => {
-        fetch(`/api/v1/get?language=${language}`)
+        fetch(`/api/v1/book?language=${language}`)
             .then((res) => res.json())
             .then((data) => {
                 if (Array.isArray(data)) {
