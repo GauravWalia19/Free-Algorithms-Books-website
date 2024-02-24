@@ -1,12 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const Book = require('../../models/Book');
 const {
-    validateAndGetBookData,
-    octokit,
+    getBooksByLanguage,
+    getBooksByNameAndLanguage,
     createIssue,
 } = require('../../util/util');
+const {
+    validateLanguageInQuery,
+    validateBugReportRequestBody,
+    validateNewBookBody,
+} = require('../../util/middleware');
 
 const connectMongoose = async () => {
     await mongoose.connect(process.env.MONGODB_URI).catch((err) => {
@@ -28,7 +32,7 @@ connectMongoose();
 handleMongooseConnectionEvents();
 
 /**
- * @endpoint: /api/v1/get
+ * @endpoint: /api/v1/book
  *
  * @method GET
  * @access public
@@ -39,12 +43,13 @@ handleMongooseConnectionEvents();
  *
  * @return response
  **/
-router.get('/get', (req, res) => {
-    return validateAndGetBookData(req, res);
+router.get('/book', validateLanguageInQuery, (req, res) => {
+    const { language } = req.query;
+    return getBooksByLanguage(res, language);
 });
 
 /**
- * @endpoint: /api/v1/search
+ * @endpoint: /api/v1/book/search
  *
  * @method GET
  * @access public
@@ -56,37 +61,21 @@ router.get('/get', (req, res) => {
  *
  * @return response
  **/
-router.get('/search', (req, res) => {
+router.get('/book/search', validateLanguageInQuery, (req, res) => {
     const { language, name } = req.query;
-    if (!language) {
-        return res.status(400).json({
-            message: 'Bad Request because of no language parameter',
-            status: 400,
-        });
-    } else if (!name) {
-        return validateAndGetBookData(req, res);
+    if (!name) {
+        return getBooksByLanguage(res, language);
     } else {
-        let expression = new RegExp(name, 'i');
-        Book.find({ language: language, name: expression }, (err, result) => {
-            if (err) {
-                console.log(err);
-                return res.status(404).json({
-                    message: 'Requested information not found',
-                    status: 404,
-                });
-            } else {
-                return res.json(result);
-            }
-        });
+        return getBooksByNameAndLanguage(res, language, name);
     }
 });
 
 /**
- * @endpoint /api/v1/bugs/report
+ * @endpoint /api/v1/bug/report
  *
  * @method POST
  **/
-router.post('/bugs/report', (req, res) => {
+router.post('/bug/report', validateBugReportRequestBody, async (req, res) => {
     const {
         title,
         description,
@@ -98,53 +87,39 @@ router.post('/bugs/report', (req, res) => {
         username,
     } = req.body;
 
-    if (
-        !title ||
-        !description ||
-        !expectedBehaviour ||
-        !device ||
-        !os ||
-        !browser ||
-        !version ||
-        !username
-    ) {
-        return res.status(400).json({
-            message: 'Bad Request because of missing parameter',
-            status: 400,
+    const issueBody = ''.concat(
+        '**Describe the bug**\n',
+        description,
+        '\n\n**Expected behavior**\n',
+        expectedBehaviour,
+        '\n\n**Desktop/Smartphone**\n-Device: ',
+        device,
+        '\n-OS: ',
+        os,
+        '\n-Browser: ',
+        browser,
+        '\n-Version: ',
+        version,
+        '\n\n**Github Username**\n',
+        username
+    );
+
+    try {
+        await createIssue(`Bug Report: ${title}`, issueBody, ['bug']);
+        return res.status(200).json({
+            message: 'Bug reported successfully',
+            status: 200,
         });
-    } else {
-        // check valid github username
-        octokit.users
-            .getByUsername({
-                username,
-            })
-            .then((response) => {
-                if (response.data) {
-                    let issueBody = ''.concat(
-                        '**Describe the bug**\n',
-                        description,
-                        '\n\n**Expected behavior**\n',
-                        expectedBehaviour,
-                        '\n\n**Desktop/Smartphone**\n-Device: ',
-                        device,
-                        '\n-OS: ',
-                        os,
-                        '\n-Browser: ',
-                        browser,
-                        '\n-Version: ',
-                        version,
-                        '\n\n**Github Username**\n',
-                        username
-                    );
-                    createIssue(title, issueBody, ['bug'], res);
-                }
-            })
-            .catch((err) => res.status(404).json(err));
+    } catch (err) {
+        return res.status(500).json({
+            message: 'Internal Server Error',
+            status: 500,
+        });
     }
 });
 
 /**
- * @endpoint /api/v1/book/add
+ * @endpoint /api/v1/book
  *
  * @method POST
  * @access public
@@ -156,36 +131,34 @@ router.post('/bugs/report', (req, res) => {
  *
  * @return response
  **/
-router.post('/book/add', (req, res) => {
+router.post('/book', validateNewBookBody, async (req, res) => {
     const { title, bookName, language, downloadLink, username } = req.body;
 
-    if (!title || !bookName || !language || !downloadLink || !username) {
-        return res.status(400).json({
-            message: 'Bad Request because of missing parameters',
-            status: 400,
+    let issueBody = ''.concat(
+        '**Book Name**\n',
+        bookName,
+        '\n\n**Programming Language**\n',
+        language,
+        '\n\n**Book Download Link**\n',
+        downloadLink,
+        '\n\n**Github Username**\n',
+        username
+    );
+
+    try {
+        await createIssue(`New Book Request: ${title}`, issueBody, [
+            'question',
+        ]);
+        return res.status(200).json({
+            message: 'Book add request submitted successfully',
+            status: 200,
         });
-    } else {
-        // check valid github username
-        octokit.users
-            .getByUsername({
-                username,
-            })
-            .then((response) => {
-                if (response.data) {
-                    let issueBody = ''.concat(
-                        '**Book Name**\n',
-                        bookName,
-                        '\n\n**Programming Language**\n',
-                        language,
-                        '\n\n**Book Download Link**\n',
-                        downloadLink,
-                        '\n\n**Github Username**\n',
-                        username
-                    );
-                    createIssue(title, issueBody, ['question'], res);
-                }
-            })
-            .catch((err) => res.status(404).json(err));
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            message: 'Internal Server Error',
+            status: 500,
+        });
     }
 });
 
