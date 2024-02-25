@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import Header from '../common/Header';
-import Footer from '../common/Footer';
-import '../styles/BooksPage.css';
-import BooksList from '../others/BooksList';
+import Header from '../../common/Header';
+import Footer from '../../common/Footer';
+import './BooksPage.css';
+import BooksList from '../../BooksList';
 import { useParams } from 'react-router-dom';
 
 const BooksPage = () => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/Header.css';
+import './Header.css';
 
 const Header = () => {
     return (
@@ -11,8 +11,12 @@ const Header = () => {
                         <span>Free Algorithm Books</span>
                     </a>
                     <ul className="navLinkList">
-                        <li className="navLinks"><a href="/#secondPage">Library</a></li>
-                        <li className="navLinks"><a href="/#thirdPage">Community</a></li>
+                        <li className="navLinks">
+                            <a href="/#secondPage">Library</a>
+                        </li>
+                        <li className="navLinks">
+                            <a href="/#thirdPage">Community</a>
+                        </li>
                         <li className="navLinks">v1.0.0</li>
                     </ul>
                 </div>
@@ -22,9 +26,8 @@ const Header = () => {
                     </a>
                 </div>
             </div>
-            
         </React.Fragment>
-    )
-}
+    );
+};
 
 export default Header;
